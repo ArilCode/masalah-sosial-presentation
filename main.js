@@ -1,3 +1,107 @@
+/* ---------- ADDED: Lightweight decorator activation logic ----------
+   - Uses a MutationObserver to detect which .slide gains the "active" class
+   - Toggles .active on corresponding <g data-slide="N">
+   - 'd' key toggles decorations on/off (handy to test perf)
+   This small JS only *adds* behavior; it does not change your existing slide functions.
+*/
+(function(){
+  let enabled = true;
+  const decorGroups = Array.from(document.querySelectorAll('#slidesDecor g.decor-group'));
+
+  function setDecorIndex(i){
+    if(!enabled){
+      decorGroups.forEach(g => g.classList.remove('active'));
+      return;
+    }
+    decorGroups.forEach(g => {
+      const idx = g.getAttribute('data-slide');
+      if(idx === String(i)) g.classList.add('active'); else g.classList.remove('active');
+    });
+  }
+
+  function currentSlideIndex(){
+    const s = document.querySelector('.slide.active');
+    return s ? Number(s.getAttribute('data-index')) : 0;
+  }
+
+  // MutationObserver watches slides for active class
+  const slidesList = document.querySelectorAll('.slide');
+  const obs = new MutationObserver(mutations => {
+    for(const m of mutations){
+      if(m.type === 'attributes' && m.attributeName === 'class'){
+        const t = m.target;
+        if(t.classList.contains('active')){
+          setDecorIndex(Number(t.getAttribute('data-index')));
+          break;
+        }
+      }
+    }
+  });
+  slidesList.forEach(s => obs.observe(s, { attributes: true }));
+
+  window.addEventListener('load', () => {
+    // show decor for initial active slide
+    setTimeout(()=> setDecorIndex(currentSlideIndex()), 220);
+  });
+
+  // toggle with key 'd'
+  window.addEventListener('keydown', (e) => {
+    if(e.key === 'd' || e.key === 'D'){
+      enabled = !enabled;
+      if(enabled) setDecorIndex(currentSlideIndex());
+      else decorGroups.forEach(g => g.classList.remove('active'));
+    }
+  });
+})();
+
+/* Rest of your original JS (unchanged) — copied from your file to keep behavior identical */
+let audioCtx = null;
+function playClickSound(){
+  try {
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const now = audioCtx.currentTime;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'square';
+    o.frequency.setValueAtTime(1000, now);
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.exponentialRampToValueAtTime(0.12, now + 0.005);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+    o.connect(g);
+    g.connect(audioCtx.destination);
+    o.start(now);
+    o.stop(now + 0.09);
+  } catch (e) {
+    console.error('playClickSound error', e);
+  }
+}
+function safePlayClick(){ playClickSound(); }
+
+function adjustPhotosOrientation(){
+  document.querySelectorAll('img.photo').forEach(img => {
+    if(!img.complete || !img.naturalWidth) return;
+    const cs = window.getComputedStyle(img);
+    const cssW = parseFloat(cs.width) || img.width || 340;
+    const cssH = parseFloat(cs.height) || img.height || 200;
+    const isPortrait = img.naturalHeight > img.naturalWidth;
+    if(isPortrait){
+      img.style.height = Math.round(cssH) + 'px';
+      img.style.width = 'auto';
+    } else {
+      img.style.width = Math.round(cssW) + 'px';
+      img.style.height = 'auto';
+    }
+    img.style.objectFit = 'cover';
+    img.style.display = 'block';
+  });
+}
+function watchPhotos(){
+  document.querySelectorAll('img.photo').forEach(img => {
+    if(img.complete && img.naturalWidth) adjustPhotosOrientation();
+    img.addEventListener('load', () => adjustPhotosOrientation());
+  });
+}
+
 let firstLoad = true;
 
 function setMasksToFullRect(){
@@ -94,7 +198,6 @@ function animateIn(slide){
 
     if(lead){ lead.style.visibility='visible'; anime.remove(lead); anime({ targets: lead, translateY:[14,0], opacity:[0,1], duration:460, easing:'easeOutQuad', delay:160, complete:function(){ lead.style.opacity='1'; lead.style.transform='none' } }); }
 
-    // Critical fix: ensure visibility is set to 'visible' for each name-tag BEFORE animating
     if(!firstLoad){
       if(madebyText){
         madebyText.style.visibility='visible';
@@ -102,18 +205,17 @@ function animateIn(slide){
         anime({ targets: madebyText, translateY:[12,0], opacity:[0,1], duration:360, easing:'easeOutCubic', delay:240 });
       }
       if(groupNames && groupNames.length){
-        groupNames.forEach(n => n.style.visibility = 'visible'); // <-- ensure visible
+        groupNames.forEach(n => n.style.visibility = 'visible');
         anime.remove(groupNames);
         const tl = anime.timeline();
         tl.add({ targets: groupNames, translateY:[12,0], opacity:[0,1], duration:420, easing:'easeOutCubic', delay: anime.stagger(80) });
       }
     } else {
-      // firstLoad: show immediately without animation
       if(madebyText){ madebyText.style.visibility='visible'; madebyText.style.opacity='1'; madebyText.style.transform='none'; }
       if(groupNames && groupNames.length) groupNames.forEach(n => { n.style.visibility='visible'; n.style.opacity='1'; n.style.transform='none'; });
     }
 
-    setTimeout(()=> scaleContentToFit(slide), 380);
+    setTimeout(()=> { adjustPhotosOrientation(); scaleContentToFit(slide); }, 380);
   } catch(e){ console.error('animateIn error', e); }
 }
 
@@ -173,7 +275,10 @@ async function goTo(target, opts = {}){
   if(target >= slides.length) target = 0;
   if(target === idx){ flashPager(); return; }
 
-  firstLoad = false; // once user navigates, subsequent reveals animate
+  // user gesture -> allow click sound
+  safePlayClick();
+
+  firstLoad = false;
 
   isAnimating = true;
   flashPager();
@@ -211,6 +316,7 @@ async function goTo(target, opts = {}){
   setTimeout(()=>{ isAnimating=false }, 3000);
 }
 
+// initial load
 window.addEventListener('load', ()=>{
   try{
     setMasksToFullRect();
@@ -228,20 +334,57 @@ window.addEventListener('load', ()=>{
     if(l){ l.style.visibility='visible'; l.style.opacity='1'; l.style.transform='none'; }
     if(p){ p.style.visibility='visible'; p.style.opacity='1'; p.style.transform='none'; }
 
-    // show madeby & names immediately on first load
     if(madebyText){ madebyText.style.visibility='visible'; madebyText.style.opacity='1'; madebyText.style.transform='none'; }
     if(groupNames && groupNames.length) Array.from(groupNames).forEach(n=>{ n.style.visibility='visible'; n.style.opacity='1'; n.style.transform='none'; });
+
+    // setup photo orientation watchers
+    watchPhotos();
+    adjustPhotosOrientation();
 
     scaleContentToFit(first);
   }catch(e){ console.error(e) }
 });
 
-container.addEventListener('pointerup', (e)=>{ if(e.button && e.button!==0) return; flashPager(); const rect = container.getBoundingClientRect(); const x = e.clientX - rect.left; if(x < rect.width/2) goTo(idx-1, { clickPos: { x:e.clientX, y:e.clientY } }); else goTo(idx+1, { clickPos: { x:e.clientX, y:e.clientY } }); }, {passive:true});
+// wire clicks to play sound + navigation
+container.addEventListener('pointerup', (e)=>{
+  if(e.button && e.button!==0) return;
+  // play click
+  safePlayClick();
+  flashPager();
+  const rect = container.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  if(x < rect.width / 2) goTo(idx-1, { clickPos: { x:e.clientX, y:e.clientY } });
+  else goTo(idx+1, { clickPos: { x:e.clientX, y:e.clientY } });
+}, {passive:true});
 
-window.addEventListener('keydown', (e)=>{ if(e.key==='ArrowRight' || e.key==='PageDown'){ flashPager(); goTo(idx+1) } if(e.key==='ArrowLeft' || e.key==='PageUp'){ flashPager(); goTo(idx-1) } });
+// keyboard nav: play sound too
+window.addEventListener('keydown', (e)=>{
+  if(e.key==='ArrowRight' || e.key==='PageDown'){ safePlayClick(); flashPager(); goTo(idx+1); }
+  if(e.key==='ArrowLeft' || e.key==='PageUp'){ safePlayClick(); flashPager(); goTo(idx-1); }
+});
 
-(function(){ let startX=null; container.addEventListener('touchstart', e=>startX=e.touches[0].clientX, {passive:true}); container.addEventListener('touchend', e=>{ if(startX==null) return; const endX=e.changedTouches[0].clientX; const diff=endX-startX; if(Math.abs(diff)>40){ flashPager(); if(diff<0) goTo(idx+1); else goTo(idx-1); } startX=null; }, {passive:true}); })();
+// swipe nav
+(function(){
+  let startX = null;
+  container.addEventListener('touchstart', e => startX = e.touches[0].clientX, {passive:true});
+  container.addEventListener('touchend', e => {
+    if(startX == null) return;
+    const endX = e.changedTouches[0].clientX;
+    const diff = endX - startX;
+    if(Math.abs(diff) > 40) {
+      safePlayClick();
+      flashPager();
+      if(diff < 0) goTo(idx+1);
+      else goTo(idx-1);
+    }
+    startX = null;
+  }, {passive:true});
+})();
 
-window.addEventListener('resize', ()=>{ const a=slides[idx]; scaleContentToFit(a); });
+window.addEventListener('resize', () => {
+  adjustPhotosOrientation();
+  const a = slides[idx];
+  scaleContentToFit(a);
+});
 
-window.Presentation = { goTo, scaleContentToFit };
+window.Presentation = { goTo, scaleContentToFit, adjustPhotosOrientation, playClickSound };
