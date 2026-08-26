@@ -1,9 +1,3 @@
-/* ---------- ADDED: Lightweight decorator activation logic ----------
-   - Uses a MutationObserver to detect which .slide gains the "active" class
-   - Toggles .active on corresponding <g data-slide="N">
-   - 'd' key toggles decorations on/off (handy to test perf)
-   This small JS only *adds* behavior; it does not change your existing slide functions.
-*/
 (function(){
   let enabled = true;
   const decorGroups = Array.from(document.querySelectorAll('#slidesDecor g.decor-group'));
@@ -24,7 +18,6 @@
     return s ? Number(s.getAttribute('data-index')) : 0;
   }
 
-  // MutationObserver watches slides for active class
   const slidesList = document.querySelectorAll('.slide');
   const obs = new MutationObserver(mutations => {
     for(const m of mutations){
@@ -40,7 +33,7 @@
   slidesList.forEach(s => obs.observe(s, { attributes: true }));
 
   window.addEventListener('load', () => {
-    // show decor for initial active slide
+
     setTimeout(()=> setDecorIndex(currentSlideIndex()), 220);
   });
 
@@ -75,9 +68,10 @@ function playClickSound(){
     console.error('playClickSound error', e);
   }
 }
-function safePlayClick(){ playClickSound(); }
+function safePlayClick() { playClickSound();
+}
 
-function adjustPhotosOrientation(){
+function adjustPhotosOrientation() {
   document.querySelectorAll('img.photo').forEach(img => {
     if(!img.complete || !img.naturalWidth) return;
     const cs = window.getComputedStyle(img);
@@ -167,14 +161,35 @@ function hideElements(slide){
   const madebyText = slide.querySelector('.madeby-text');
   const groupNames = slide.querySelectorAll('.group-names .name-tag');
 
-  if(title){ title.style.visibility='hidden'; title.style.opacity='0'; title.style.transform='translateY(14px) scale(0.98)'; }
-  if(lead){ lead.style.visibility='hidden'; lead.style.opacity='0'; lead.style.transform='translateY(14px) scale(0.98)'; }
-  if(photo){ photo.style.visibility='hidden'; photo.style.opacity='0'; photo.style.transform='scale(0.96)'; }
-  if(madebyText){ madebyText.style.visibility='hidden'; madebyText.style.opacity='0'; madebyText.style.transform='translateY(14px) scale(0.98)'; }
-  if(groupNames && groupNames.length) Array.from(groupNames).forEach(n => { n.style.visibility='hidden'; n.style.opacity='0'; n.style.transform='translateY(14px) scale(0.98)'; });
+  if (title) {
+    title.style.visibility = 'hidden';
+    title.style.opacity = '0';
+    title.style.transform = 'translateY(14px) scale(0.98)'; 
+  }
+  
+  if (lead) {
+    lead.style.visibility = 'hidden';
+    lead.style.opacity = '0';
+    lead.style.transform = 'translateY(14px) scale(0.98)';
+  }
+  if (photo) { 
+    photo.style.visibility = 'hidden';
+    photo.style.opacity = '0'; photo.style.transform = 'scale(0.96)';
+    }
+  if (madebyText) {
+    madebyText.style.visibility = 'hidden';
+    madebyText.style.opacity = '0';
+    madebyText.style.transform = 'translateY(14px) scale(0.98)';
+  }
+  
+  if (groupNames && groupNames.length) Array.from(groupNames).forEach(n => {
+    n.style.visibility = 'hidden';
+    n.style.opacity = '0';
+    n.style.transform = 'translateY(14px) scale(0.98)';
+  });
 }
 
-function animateIn(slide){
+function animateIn(slide) {
   try {
     const title = slide.querySelector('.title');
     const lead = slide.querySelector('.lead');
@@ -183,28 +198,56 @@ function animateIn(slide){
     const groupNamesNodeList = slide.querySelectorAll('.group-names .name-tag');
     const groupNames = Array.from(groupNamesNodeList);
 
-    if(title){ title.style.visibility='visible'; splitTitleIntoWordsAndChars(title); }
-
-    const chars = title ? title.querySelectorAll('.char') : [];
-    if(chars && chars.length){
-      anime.remove(chars);
-      anime({ targets: chars, translateY:[24,0], opacity:[0,1], rotate:[6,0], duration:520, delay: anime.stagger(12), easing:'cubicBezier(.22,.9,.38,1)', complete:function(){ chars.forEach(c=>{ c.style.opacity='1'; c.style.transform='none' }); if(title){ title.style.opacity='1'; title.style.transform='none'; title.style.visibility='visible' } }});
-    } else if(title){
-      anime.remove(title);
-      anime({ targets: title, translateY:[18,0], opacity:[0,1], duration:420, easing:'easeOutCubic', complete:function(){ title.style.opacity='1'; title.style.transform='none'; title.style.visibility='visible' }});
+    if (title) {
+      title.style.visibility = 'visible';
+      splitTitleIntoWordsAndChars(title);
     }
 
-    if(photo){ photo.style.visibility='visible'; anime.remove(photo); anime({ targets: photo, scale:[0.96,1.02,1], opacity:[0,1], duration:560, easing:'spring(1,80,12,8)', complete:function(){ photo.style.opacity='1'; photo.style.transform='none' } }); }
+    const chars = title ? title.querySelectorAll('.char') : [];
+    if (chars && chars.length) {
+      anime.remove(chars);
+      anime({ targets: chars, translateY:[24,0], opacity:[0,1], rotate:[6,0], duration:520, delay: anime.stagger(12), easing:'cubicBezier(.22,.9,.38,1)', complete:function(){ chars.forEach(c=> {
+        c.style.opacity = '1';
+        c.style.transform = 'none'
+      });
+      if (title) {
+        title.style.opacity = '1';
+        title.style.transform = 'none';
+        title.style.visibility = 'visible' }
+      }});
+    } else if (title) {
+      anime.remove(title);
+      anime({ targets: title, translateY:[18,0], opacity:[0,1], duration:420, easing:'easeOutCubic', complete:function() {
+        title.style.opacity = '1';
+        title.style.transform = 'none';
+        title.style.visibility = 'visible' 
+      }});
+    }
 
-    if(lead){ lead.style.visibility='visible'; anime.remove(lead); anime({ targets: lead, translateY:[14,0], opacity:[0,1], duration:460, easing:'easeOutQuad', delay:160, complete:function(){ lead.style.opacity='1'; lead.style.transform='none' } }); }
+    if (photo) {
+      photo.style.visibility = 'visible';
+      anime.remove(photo); anime({ targets: photo, scale:[0.96,1.02,1], opacity:[0,1], duration:560, easing:'spring(1,80,12,8)', complete:function() {
+        photo.style.opacity = '1';
+        photo.style.transform = 'none'
+      }});
+    }
 
-    if(!firstLoad){
-      if(madebyText){
-        madebyText.style.visibility='visible';
+    if (lead) {
+      lead.style.visibility = 'visible';
+      anime.remove(lead);
+      anime({ targets: lead, translateY:[14,0], opacity:[0,1], duration:460, easing:'easeOutQuad', delay:160, complete:function(){
+        lead.style.opacity = '1';
+        lead.style.transform = 'none' 
+      }});
+    }
+
+    if (!firstLoad) {
+      if (madebyText) {
+        madebyText.style.visibility = 'visible';
         anime.remove(madebyText);
         anime({ targets: madebyText, translateY:[12,0], opacity:[0,1], duration:360, easing:'easeOutCubic', delay:240 });
       }
-      if(groupNames && groupNames.length){
+      if (groupNames && groupNames.length) {
         groupNames.forEach(n => n.style.visibility = 'visible');
         anime.remove(groupNames);
         const tl = anime.timeline();
