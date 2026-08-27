@@ -395,9 +395,14 @@ svg#morph {
     font-size: 0.9em;
     margin-bottom: 8px;
   }
+
+  .hero .lead {
+    margin-bottom: 6px; 
+  }
   
   .mindmap {
     padding: 8px;
+    margin-top: 6px;
   }
   
   .mindmap-item,
@@ -408,11 +413,40 @@ svg#morph {
   .mindmap-item span {
     font-size: 0.72em;
   }
+  
+  .slide[data-index="8"] .title { font-size: 18px;
+  }
+  
+  .slide[data-index="8"] .photo {
+    width: 120px;
+    height: 150px;
+  }
+  
+  .slide[data-index="8"] .lead { font-size: 0.85em; 
+  }
+  
+  .slide[data-index="8"] .mindmap-branch { 
+    gap: 8px;
+  }
 }
 
 @media (max-width:640px) {
   .example-list li p {
     font-size: 0.85em;
+  }
+  
+  .photo {
+    width: 240px; 
+    height: 150px;
+  }
+      
+  .text-panel { 
+    width: calc(100% - 40px);
+    padding: 18px;
+  }
+      
+  .title { 
+    font-size: 20px; 
   }
 }
 
@@ -457,43 +491,13 @@ svg#morph {
   .mindmap {
     margin-top: 8px;
   }
-}
-
-@media (max-width: 520px) {
-  .hero .lead {
-    margin-bottom: 6px; 
-  }
   
-  .mindmap {
-    margin-top: 6px;
-  }
-}
-
-@media (max-width:640px) {
-  .photo {
-    width: 240px; 
-    height: 150px;
-  }
-      
-  .text-panel { 
-    width: calc(100% - 40px);
-    padding: 18px;
-  }
-      
-  .title { 
-    font-size: 20px; 
-  }
-}
-
-
-/* LAYOUT SLIDE 8 MERTON - SEPERTI GAMBAR REFERENSI */
-@media (max-width: 980px) {
   .slide[data-index="8"] {
     padding: 28px 20px;
-    align-items: center; /* semua ketengah */
+    align-items: center;
     justify-content: flex-start;
     overflow: hidden;
-    background: linear-gradient(180deg, #f0f9ff 0%, #e0f2fe 100%); /* background biru muda */
+    background: linear-gradient(180deg, #f0f9ff 0%, #e0f2fe 100%);
   }
 
   .slide[data-index="8"] .inner {
@@ -508,7 +512,7 @@ svg#morph {
     padding: 0;
     background: transparent;
     box-shadow: none;
-    text-align: center; /* semua teks tengah */
+    text-align: center;
   }
 
   .slide[data-index="8"] .title {
@@ -520,7 +524,7 @@ svg#morph {
   }
 
   .slide[data-index="8"] .hero {
-    flex-direction: column; /* foto di atas teks */
+    flex-direction: column;
     align-items: center;
     gap: 14px;
     margin: 0;
@@ -529,7 +533,7 @@ svg#morph {
   .slide[data-index="8"] .photo {
     width: 140px;
     height: 170px;
-    border-radius: 12px; /* sudut melengkung seperti gambar */
+    border-radius: 12px;
     object-fit: cover;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   }
@@ -541,6 +545,7 @@ svg#morph {
     max-width: 90%;
     margin: 0 auto;
   }
+  
   .slide[data-index="8"] .lead strong {
     color: #0f172a;
   }
@@ -548,7 +553,7 @@ svg#morph {
   /* MINDMAP STYLE KARTU */
   .slide[data-index="8"] .mindmap {
     width: 95%;
-    background: rgba(14, 165, 233, 0.08); /* biru muda transparan */
+    background: rgba(14, 165, 233, 0.08);
     border: 2px solid #0ea5e9;
     border-radius: 16px;
     padding: 16px 14px;
@@ -565,7 +570,7 @@ svg#morph {
 
   .slide[data-index="8"] .mindmap-branch {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* 2 kolom atas */
+    grid-template-columns: 1fr 1fr;
     gap: 10px;
   }
 
@@ -578,7 +583,7 @@ svg#morph {
 
   .slide[data-index="8"] .mindmap-item {
     background: #ffffff;
-    border-top: 4px solid #0ea5e9; /* garis biru atas */
+    border-top: 4px solid #0ea5e9;
     border-radius: 12px;
     padding: 12px 10px;
     text-align: left;
@@ -588,7 +593,7 @@ svg#morph {
   .slide[data-index="8"] .mindmap-item strong {
     display: block;
     font-size: 0.95em;
-    color: #0ea5e9; /* biru toska */
+    color: #0ea5e9;
     margin-bottom: 4px;
   }
 
@@ -597,12 +602,4 @@ svg#morph {
     color: #475569;
     line-height: 1.4;
   }
-}
-
-/* HP SANGAT KECIL */
-@media (max-width: 520px) {
-  .slide[data-index="8"] .title { font-size: 18px; }
-  .slide[data-index="8"] .photo { width: 120px; height: 150px; }
-  .slide[data-index="8"] .lead { font-size: 0.85em; }
-  .slide[data-index="8"] .mindmap-branch { gap: 8px; }
 }
