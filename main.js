@@ -15,7 +15,7 @@
 
   function currentSlideIndex(){
     const s = document.querySelector('.slide.active');
-    return s ? Number(s.getAttribute('data-index')) : 0;
+    return s? Number(s.getAttribute('data-index')) : 0;
   }
 
   const slidesList = document.querySelectorAll('.slide');
@@ -33,14 +33,13 @@
   slidesList.forEach(s => obs.observe(s, { attributes: true }));
 
   window.addEventListener('load', () => {
-
     setTimeout(()=> setDecorIndex(currentSlideIndex()), 220);
   });
 
   // toggle with key 'd'
   window.addEventListener('keydown', (e) => {
     if(e.key === 'd' || e.key === 'D'){
-      enabled = !enabled;
+      enabled =!enabled;
       if(enabled) setDecorIndex(currentSlideIndex());
       else decorGroups.forEach(g => g.classList.remove('active'));
     }
@@ -73,7 +72,7 @@ function safePlayClick() { playClickSound();
 
 function adjustPhotosOrientation() {
   document.querySelectorAll('img.photo').forEach(img => {
-    if(!img.complete || !img.naturalWidth) return;
+    if(!img.complete ||!img.naturalWidth) return;
     const cs = window.getComputedStyle(img);
     const cssW = parseFloat(cs.width) || img.width || 340;
     const cssH = parseFloat(cs.height) || img.height || 200;
@@ -159,20 +158,20 @@ function hideElements(slide){
   const lead = slide.querySelector('.lead');
   const photo = slide.querySelector('.photo');
   const madebyText = slide.querySelector('.madeby-text');
-  const groupNames = slide.querySelectorAll('.group-names .name-tag');
+  const groupNames = slide.querySelectorAll('.group-names.name-tag');
 
   if (title) {
     title.style.visibility = 'hidden';
     title.style.opacity = '0';
-    title.style.transform = 'translateY(14px) scale(0.98)'; 
+    title.style.transform = 'translateY(14px) scale(0.98)';
   }
-  
+
   if (lead) {
     lead.style.visibility = 'hidden';
     lead.style.opacity = '0';
     lead.style.transform = 'translateY(14px) scale(0.98)';
   }
-  if (photo) { 
+  if (photo) {
     photo.style.visibility = 'hidden';
     photo.style.opacity = '0'; photo.style.transform = 'scale(0.96)';
     }
@@ -181,7 +180,7 @@ function hideElements(slide){
     madebyText.style.opacity = '0';
     madebyText.style.transform = 'translateY(14px) scale(0.98)';
   }
-  
+
   if (groupNames && groupNames.length) Array.from(groupNames).forEach(n => {
     n.style.visibility = 'hidden';
     n.style.opacity = '0';
@@ -195,7 +194,7 @@ function animateIn(slide) {
     const lead = slide.querySelector('.lead');
     const photo = slide.querySelector('.photo');
     const madebyText = slide.querySelector('.madeby-text');
-    const groupNamesNodeList = slide.querySelectorAll('.group-names .name-tag');
+    const groupNamesNodeList = slide.querySelectorAll('.group-names.name-tag');
     const groupNames = Array.from(groupNamesNodeList);
 
     if (title) {
@@ -203,7 +202,7 @@ function animateIn(slide) {
       splitTitleIntoWordsAndChars(title);
     }
 
-    const chars = title ? title.querySelectorAll('.char') : [];
+    const chars = title? title.querySelectorAll('.char') : [];
     if (chars && chars.length) {
       anime.remove(chars);
       anime({ targets: chars, translateY:[24,0], opacity:[0,1], rotate:[6,0], duration:520, delay: anime.stagger(12), easing:'cubicBezier(.22,.9,.38,1)', complete:function(){ chars.forEach(c=> {
@@ -220,7 +219,7 @@ function animateIn(slide) {
       anime({ targets: title, translateY:[18,0], opacity:[0,1], duration:420, easing:'easeOutCubic', complete:function() {
         title.style.opacity = '1';
         title.style.transform = 'none';
-        title.style.visibility = 'visible' 
+        title.style.visibility = 'visible'
       }});
     }
 
@@ -237,7 +236,7 @@ function animateIn(slide) {
       anime.remove(lead);
       anime({ targets: lead, translateY:[14,0], opacity:[0,1], duration:460, easing:'easeOutQuad', delay:160, complete:function(){
         lead.style.opacity = '1';
-        lead.style.transform = 'none' 
+        lead.style.transform = 'none'
       }});
     }
 
@@ -281,15 +280,15 @@ function scaleContentToFit(slide){
   const title = slide.querySelector('.title');
   const lead = slide.querySelector('.lead');
   if(!panel) return;
-  if(title && !title.dataset.baseSize) title.dataset.baseSize = window.getComputedStyle(title).fontSize;
-  if(lead && !lead.dataset.baseSize) lead.dataset.baseSize = window.getComputedStyle(lead).fontSize;
+  if(title &&!title.dataset.baseSize) title.dataset.baseSize = window.getComputedStyle(title).fontSize;
+  if(lead &&!lead.dataset.baseSize) lead.dataset.baseSize = window.getComputedStyle(lead).fontSize;
   if(title && title.dataset.baseSize) title.style.fontSize = title.dataset.baseSize;
   if(lead && lead.dataset.baseSize) lead.style.fontSize = lead.dataset.baseSize;
   const maxH = window.innerHeight - 140;
   let panelH = panel.scrollHeight;
   if(panelH <= maxH) return;
-  let titleSize = title ? parseFloat(title.dataset.baseSize) : 22;
-  let leadSize = lead ? parseFloat(lead.dataset.baseSize) : 16;
+  let titleSize = title? parseFloat(title.dataset.baseSize) : 22;
+  let leadSize = lead? parseFloat(lead.dataset.baseSize) : 16;
   const minTitle = 12; const minLead = 11;
   let iter = 0;
   while(panelH > maxH && iter < 20){
@@ -318,11 +317,8 @@ async function goTo(target, opts = {}){
   if(target >= slides.length) target = 0;
   if(target === idx){ flashPager(); return; }
 
-  // user gesture -> allow click sound
   safePlayClick();
-
   firstLoad = false;
-
   isAnimating = true;
   flashPager();
 
@@ -371,7 +367,7 @@ window.addEventListener('load', ()=>{
     const l = first.querySelector('.lead');
     const p = first.querySelector('.photo');
     const madebyText = first.querySelector('.madeby-text');
-    const groupNames = first.querySelectorAll('.group-names .name-tag');
+    const groupNames = first.querySelectorAll('.group-names.name-tag');
 
     if(t){ t.style.visibility='visible'; t.style.opacity='1'; t.style.transform='none'; }
     if(l){ l.style.visibility='visible'; l.style.opacity='1'; l.style.transform='none'; }
@@ -380,18 +376,19 @@ window.addEventListener('load', ()=>{
     if(madebyText){ madebyText.style.visibility='visible'; madebyText.style.opacity='1'; madebyText.style.transform='none'; }
     if(groupNames && groupNames.length) Array.from(groupNames).forEach(n=>{ n.style.visibility='visible'; n.style.opacity='1'; n.style.transform='none'; });
 
-    // setup photo orientation watchers
     watchPhotos();
     adjustPhotosOrientation();
 
     scaleContentToFit(first);
+
+    // Auto fullscreen pas load
+    setTimeout(enterFullscreen, 500);
   }catch(e){ console.error(e) }
 });
 
 // wire clicks to play sound + navigation
 container.addEventListener('pointerup', (e)=>{
   if(e.button && e.button!==0) return;
-  // play click
   safePlayClick();
   flashPager();
   const rect = container.getBoundingClientRect();
@@ -400,10 +397,14 @@ container.addEventListener('pointerup', (e)=>{
   else goTo(idx+1, { clickPos: { x:e.clientX, y:e.clientY } });
 }, {passive:true});
 
-// keyboard nav: play sound too
+// keyboard nav: play sound too + F untuk fullscreen
 window.addEventListener('keydown', (e)=>{
   if(e.key==='ArrowRight' || e.key==='PageDown'){ safePlayClick(); flashPager(); goTo(idx+1); }
   if(e.key==='ArrowLeft' || e.key==='PageUp'){ safePlayClick(); flashPager(); goTo(idx-1); }
+  if(e.key==='f' || e.key==='F'){
+    if(!document.fullscreenElement) enterFullscreen();
+    else exitFullscreen();
+  }
 });
 
 // swipe nav
@@ -431,3 +432,40 @@ window.addEventListener('resize', () => {
 });
 
 window.Presentation = { goTo, scaleContentToFit, adjustPhotosOrientation, playClickSound };
+
+/* TAMBAHAN: FULLSCREEN MODE UNTUK TV / PRESENTASI */
+function enterFullscreen() {
+  const elem = document.documentElement;
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.webkitRequestFullscreen) {
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) {
+    elem.msRequestFullscreen();
+  }
+}
+
+function exitFullscreen() {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  } else if (document.msExitFullscreen) {
+    document.msExitFullscreen();
+  }
+}
+
+// Swipe dari bawah ke atas untuk munculin tombol HP 3 detik
+let touchStartY = 0;
+document.addEventListener('touchstart', e => {
+  touchStartY = e.touches[0].clientY;
+}, {passive:true});
+
+document.addEventListener('touchend', e => {
+  const touchEndY = e.changedTouches[0].clientY;
+  const diff = touchStartY - touchEndY;
+  if (window.innerHeight - touchStartY < 100 && diff > 80) {
+    exitFullscreen();
+    setTimeout(enterFullscreen, 3000);
+  }
+}, {passive:true});
