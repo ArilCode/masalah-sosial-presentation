@@ -251,6 +251,7 @@ svg#morph {
   height: 200px; 
 }
 
+
 .example-list {
   text-align: left;
   padding-left: 1.5em;
@@ -374,7 +375,7 @@ svg#morph {
     }
 
 @media (prefers-reduced-motion: reduce) {
-    * {
+  * {
     transition: none!important;
     animation: none!important;
   }
@@ -600,24 +601,5 @@ svg#morph {
     font-size: 0.85em;
     color: #475569;
     line-height: 1.4;
-  }
-}
-
-/* TAMBAHAN: FIX SLIDE 10 KE POTONG DI TV */
-.slide[data-index="10"] .inner {
-  justify-content: flex-start;
-  padding-top: 4vh;
-}
-
-.slide[data-index="10"] .text-panel {
-  margin-bottom: 8vh;
-}
-
-@media (min-height: 900px) {
- .slide[data-index="10"] .inner {
-    padding-top: 6vh;
-  }
- .slide[data-index="10"] .text-panel {
-    margin-bottom: 10vh;
   }
 }
